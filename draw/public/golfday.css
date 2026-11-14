@@ -220,6 +220,13 @@ a[href^="tel:"]{white-space:nowrap}
   .closing-links{gap:8px 20px;flex-wrap:wrap;margin-top:32px}
   .closing-links a{display:inline-flex;align-items:center;gap:6px;padding:14px 6px}
   .results-row .text-button{padding:14px 0 12px}
+  /* Phones: keep the search and filters in reach while scrolling the draw */
+  .draw-tools{position:sticky;top:8px;z-index:5;margin-top:20px;padding:8px;gap:8px;box-shadow:0 10px 28px rgba(14,18,58,.14)}
+  .draw-tools .tabs button{padding:10px 2px}
+  .draw-tools .search input{padding-top:11px;padding-bottom:11px}
+  .tee-heading{scroll-margin-top:130px}
+  /* Phones: smaller summary tiles so the search sits nearer the top */
+  .stat{padding:12px 8px}.stat strong{font-size:24px;margin:6px 0 2px}.stat small{font-size:10.5px;line-height:1.35}.stat-label{font-size:8.5px;letter-spacing:.18em}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.card:hover{transition:none;transform:none}}
 @media print{

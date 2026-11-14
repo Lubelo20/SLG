@@ -310,3 +310,6 @@ body{background:transparent}
 @media(max-width:960px){.tee-row{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:720px){.tee-row{grid-template-columns:1fr}}
 #refreshments .feature{margin-top:16px}
+
+/* Phones: the two competition cards sit side by side */
+@media(max-width:720px){#competitions .grid2{grid-template-columns:1fr 1fr;gap:10px}#competitions .card{padding:18px 16px}#competitions .card h3{font-size:18px}}
