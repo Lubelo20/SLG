@@ -8,17 +8,21 @@ export async function createRepository(connectionString = process.env.DATABASE_U
     async list() {
       return (await sql`SELECT * FROM public.draw_entries ORDER BY organisation ASC`).map(normalize);
     },
-    async save(entry, id = null, version = null) {
+    async save(entry, id = null, version = null, expectedGroups = null) {
       const { organisation, bookings, groups, payment, amount, notes } = entry;
       const data = JSON.stringify(groups);
+      const expected = expectedGroups ? JSON.stringify(expectedGroups) : null;
       const rows = id
         ? await sql`UPDATE public.draw_entries SET organisation=${organisation}, bookings=${bookings}, groups=${data}::jsonb,
             payment=${payment}, amount=${amount}, notes=${notes}, updated_at=GREATEST(now(),updated_at + interval '1 millisecond')
-            WHERE id=${id}::uuid AND (${version}::timestamptz IS NULL OR date_trunc('milliseconds',updated_at)=${version}::timestamptz) RETURNING *`
+            WHERE id=${id}::uuid AND (${version}::timestamptz IS NULL OR date_trunc('milliseconds',updated_at)=${version}::timestamptz)
+              AND (${expected}::jsonb IS NULL OR groups=${expected}::jsonb) RETURNING *`
         : await sql`INSERT INTO public.draw_entries (organisation,bookings,groups,payment,amount,notes)
             VALUES (${organisation},${bookings},${data}::jsonb,${payment},${amount},${notes}) RETURNING *`;
-      if (!rows.length && id && version && (await sql`SELECT id FROM public.draw_entries WHERE id=${id}::uuid`).length) {
-        throw Object.assign(new Error('stale entry'), { code: 'STALE_ENTRY' });
+      if (!rows.length && id && (version || expected)) {
+        const [current] = await sql`SELECT (${version}::timestamptz IS NOT NULL AND date_trunc('milliseconds',updated_at)<>${version}::timestamptz) AS stale FROM public.draw_entries WHERE id=${id}::uuid`;
+        if (current?.stale) throw Object.assign(new Error('stale entry'), { code: 'STALE_ENTRY' });
+        if (current) throw Object.assign(new Error('attendance changed'), { code: 'ATTENDANCE_CHANGED' });
       }
       return rows.length ? normalize(rows[0]) : null;
     },

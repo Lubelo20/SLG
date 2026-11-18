@@ -26,6 +26,28 @@ export function validate(x) {
   });
   return { organisation: x.organisation.trim(), bookings: x.bookings, groups, payment: x.payment ?? 'pending', amount: x.amount ?? null, notes: x.notes?.trim() ?? '' };
 }
+const nameKey = name => name.trim().toLowerCase();
+const nameWords = name => nameKey(name).split(/\s+/).filter(Boolean);
+// Attendance belongs to the golfer: it follows them between slots and survives a corrected name, but never passes to a replacement.
+export function carryAttendance(before, after) {
+  const ticked = before.flatMap((g, group) => (g.attended || []).flatMap((on, player) => on ? [{ group, player, name: g.players[player] || '' }] : []));
+  const take = tick => { ticked.splice(ticked.indexOf(tick), 1); return true; };
+  const marks = after.map(g => g.players.map(() => false));
+  const slots = after.flatMap((g, group) => g.players.map((name, player) => ({ group, player, name })));
+  const here = s => t => t.group === s.group && t.player === s.player;
+  for (const s of slots) {
+    if (!s.name) continue;
+    const same = t => t.name && nameKey(t.name) === nameKey(s.name);
+    const tick = ticked.find(t => here(s)(t) && same(t)) || ticked.find(same);
+    if (tick) marks[s.group][s.player] = take(tick);
+  }
+  for (const s of slots) {
+    if (marks[s.group][s.player]) continue;
+    const tick = ticked.find(here(s));
+    if (tick && (!tick.name || nameWords(tick.name).some(w => nameWords(s.name).includes(w)))) marks[s.group][s.player] = take(tick);
+  }
+  after.forEach((g, i) => { if (marks[i].some(Boolean)) g.attended = marks[i]; else delete g.attended; });
+}
 function equal(a, b) {
   const aa = Buffer.from(a), bb = Buffer.from(b);
   return aa.length === bb.length && timingSafeEqual(aa, bb);
@@ -128,21 +150,31 @@ export function createHandler(repositoryFactory = createRepository, options = {}
       }
       let entry;
       try { entry = validate(body()); } catch (e) { return reply(400, { error: e.message }); }
-      const rows = await db.list();
-      if (req.method === 'PUT') {
-        const existing = rows.find(row => row.id === id);
-        if (!existing) return reply(404, { error: 'Entry no longer exists.' });
-        if (body().payment === undefined) entry.payment = existing.payment;
-        if (body().amount === undefined) entry.amount = existing.amount;
-        if (body().notes === undefined) entry.notes = existing.notes;
-        // The edit form sends tee, time and players only; attendance ticks stay with their golfer slot.
-        entry.groups.forEach((g, i) => { if (existing.groups[i]?.attended) g.attended = existing.groups[i].attended; });
+      // Ticks are saved independently of edits, so an edit retries if one lands between reading and saving the entry.
+      for (let attempt = 1; ; attempt++) {
+        const rows = await db.list();
+        let expectedGroups = null;
+        if (req.method === 'PUT') {
+          const existing = rows.find(row => row.id === id);
+          if (!existing) return reply(404, { error: 'Entry no longer exists.' });
+          if (body().payment === undefined) entry.payment = existing.payment;
+          if (body().amount === undefined) entry.amount = existing.amount;
+          if (body().notes === undefined) entry.notes = existing.notes;
+          // The edit form sends tee, time and players only.
+          carryAttendance(existing.groups, entry.groups);
+          expectedGroups = existing.groups;
+        }
+        const tees = new Set(rows.filter(r => r.id !== id).flatMap(r => r.groups.map(slot)).filter(Boolean));
+        if (entry.groups.some(g => g.tee && tees.has(slot(g)))) return reply(409, { error: 'That starting hole and tee time is already assigned to another group.' });
+        try {
+          const result = await db.save(entry, req.method === 'PUT' ? id : null, version, expectedGroups);
+          return reply(result ? (req.method === 'POST' ? 201 : 200) : 404, result || { error: 'Entry no longer exists.' });
+        } catch (e) {
+          if (e.code !== 'ATTENDANCE_CHANGED' || attempt >= 3) throw e;
+        }
       }
-      const tees = new Set(rows.filter(r => r.id !== id).flatMap(r => r.groups.map(slot)).filter(Boolean));
-      if (entry.groups.some(g => g.tee && tees.has(slot(g)))) return reply(409, { error: 'That starting hole and tee time is already assigned to another group.' });
-      const result = await db.save(entry, req.method === 'PUT' ? id : null, version);
-      return reply(result ? (req.method === 'POST' ? 201 : 200) : 404, result || { error: 'Entry no longer exists.' });
     } catch (e) {
+      if (e.code === 'ATTENDANCE_CHANGED') return reply(409, { error: 'Golfers in this organisation were being ticked in. Your changes are not saved yet, so please save again.', code: 'ATTENDANCE_CHANGED' });
       if (e.code === 'INVALID_JSON') return reply(400, { error: 'Request body must be valid JSON.' });
       if (e.code === '23505') return reply(409, { error: 'That starting hole and tee time is already assigned to another group.' });
       if (e.code === 'STALE_ENTRY') return reply(409, { error: 'This entry was changed by another organiser. Refresh the dashboard and reopen it before saving.', code: 'STALE_ENTRY' });

@@ -230,3 +230,12 @@ dialog::backdrop{background:rgba(14,18,58,.55);backdrop-filter:blur(3px)}
   .row-actions{justify-content:stretch}.row-actions button{flex:1}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Phones and tablets: header links and the text buttons get 44px tap targets. */
+@media(max-width:900px){
+  .sidebar .bottom a{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-size:13px}
+}
+@media(max-width:600px){
+  #refresh.text-button{min-height:44px;padding-top:0;padding-bottom:0}
+  .row-actions button{min-height:44px}
+}

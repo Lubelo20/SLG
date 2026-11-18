@@ -24,7 +24,7 @@ If `.env.local` already exists, the app preserves it. To select local developmen
 
 The public draw searches organisations, golfers, and starting holes, filters assigned/pending groups, prints the current filtered draw, and refreshes automatically once per minute while visible. Loading failures retain the last loaded live data with a warning; first-load failures show a labelled saved snapshot of the draw.
 
-The dashboard adds/edits/deletes organisations, maintains 1–8 groups of exactly four golfer slots, reserves starting holes, records payment status/amounts/private notes, filters bookings, and exports filtered records to CSV. It shows draw readiness and recorded paid totals; unknown amounts are excluded. CSV booking amounts repeat for each group and must not be summed as per-group amounts.
+The dashboard adds/edits/deletes organisations, maintains 1–8 groups of exactly four golfer slots, reserves starting holes with optional tee times, keeps an attendance register, searches bookings, and exports filtered records to CSV. It shows draw readiness and attendance progress. Payment status, amounts and private notes remain in the API and database, but the dashboard no longer shows or edits them.
 
 Both backends reject duplicate starting-hole labels transactionally. The dashboard submits record versions to detect stale edits/deletions and prevent overwriting another organiser's changes. Deletion requires confirmation and permanently releases the group's starting-hole reservations.
 

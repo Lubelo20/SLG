@@ -220,6 +220,13 @@ a[href^="tel:"]{white-space:nowrap}
   .closing-links{gap:8px 20px;flex-wrap:wrap;margin-top:32px}
   .closing-links a{display:inline-flex;align-items:center;gap:6px;padding:14px 6px}
   .results-row .text-button{padding:14px 0 12px}
+  /* Phones: keep the search and filters in reach while scrolling the draw */
+  .draw-tools{position:sticky;top:8px;z-index:5;margin-top:20px;padding:8px;gap:8px;box-shadow:0 10px 28px rgba(14,18,58,.14)}
+  .draw-tools .tabs button{padding:10px 2px}
+  .draw-tools .search input{padding-top:11px;padding-bottom:11px}
+  .tee-heading{scroll-margin-top:130px}
+  /* Phones: smaller summary tiles so the search sits nearer the top */
+  .stat{padding:12px 8px}.stat strong{font-size:24px;margin:6px 0 2px}.stat small{font-size:10.5px;line-height:1.35}.stat-label{font-size:8.5px;letter-spacing:.18em}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.card:hover{transition:none;transform:none}}
 @media print{
@@ -233,3 +240,16 @@ a[href^="tel:"]{white-space:nowrap}
   .tee strong{color:var(--ink);border-color:#999}.tee span,.tee-when b,.status,.status.complete{color:var(--ink)}
 }
 @media(max-width:960px) and (min-width:721px){.stations{grid-template-columns:repeat(2,1fr)}}
+
+/* Phones: every link and button gets a 44–48px tap target and a larger, less-tracked label. */
+@media(max-width:720px){
+  .btn{min-height:48px;font-size:10.5px;letter-spacing:.22em}
+  .hero-actions{flex-direction:column;align-items:center}
+  .hero-actions .btn-light{width:100%;max-width:320px;min-width:0}
+  .tabs button{min-height:44px}
+  .results-row .text-button{min-height:44px;padding:0;font-size:10.5px;letter-spacing:.2em}
+  .contact a{display:flex;align-items:center;justify-content:center;min-height:48px;font-size:15px}
+  .closing-links{flex-direction:column;align-items:center;gap:0}
+  .closing-links a{min-height:44px;padding:0 12px;font-size:10.5px;letter-spacing:.24em}
+}
+.is-hidden{display:none!important}

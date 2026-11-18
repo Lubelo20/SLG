@@ -25,12 +25,15 @@ export function createLocalRepository(filename = path.resolve('.data/draw.sqlite
     try { const result = fn(); db.exec('COMMIT'); return result; }
     catch (error) { db.exec('ROLLBACK'); throw error; }
   };
-  function save(entry, id = null, expectedVersion = null) {
+  function save(entry, id = null, expectedVersion = null, expectedGroups = null) {
     return transaction(() => {
       const current = id ? select.get(id) : null;
       if (id && !current) return null;
       if (expectedVersion && current.updated_at !== expectedVersion) {
         throw Object.assign(new Error('stale entry'), { code: 'STALE_ENTRY' });
+      }
+      if (id && expectedGroups && current.groups !== JSON.stringify(expectedGroups)) {
+        throw Object.assign(new Error('attendance changed'), { code: 'ATTENDANCE_CHANGED' });
       }
       const key = id || randomUUID();
       const now = new Date(Math.max(Date.now(), current ? Date.parse(current.updated_at) + 1 : 0)).toISOString();
@@ -46,7 +49,7 @@ export function createLocalRepository(filename = path.resolve('.data/draw.sqlite
   }
   return {
     async list() { return db.prepare('SELECT * FROM entries ORDER BY organisation COLLATE NOCASE').all().map(normalize); },
-    async save(entry, id, version) { return save(entry, id, version); },
+    async save(entry, id, version, expectedGroups) { return save(entry, id, version, expectedGroups); },
     async attend(id, group, player, attended) {
       return transaction(() => {
         const current = normalize(select.get(id));

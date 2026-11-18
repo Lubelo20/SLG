@@ -1,4 +1,4 @@
-import { $, byStart, el, request, stats, time, toast } from './ui.js';
+import { $, allocationNote, byStart, el, emptyDrawCopy, request, stats, toast } from './ui.js';
 import { logo } from './logos.js';
 let entries = [], filter = 'all', loading = false, source = 'preview';
 function groups() {
@@ -20,7 +20,7 @@ function render() {
   const q = $('#search').value.trim().toLowerCase();
   const visible = all.filter(g => (filter === 'all' || (filter === 'assigned' ? !!g.tee : !g.tee)) && `${g.organisation} ${g.tee} ${g.time || ''} ${g.players.join(' ')}`.toLowerCase().includes(q))
     .sort((a, b) => byStart(a, b) || a.organisation.localeCompare(b.organisation));
-  stats('#stats', [[entries.length, 'Organisations', 'Joining us on the green'], [all.length, 'Booked groups', 'Four golfers per group'], [holes.join(' & ') || '—', 'Starting holes', all.length - assigned ? `${assigned} of ${all.length} groups allocated` : 'Every group has a tee time'], [named, 'Named golfers', `of ${all.length * 4} player places`]]);
+  stats('#stats', [[entries.length, 'Organisations', 'Joining us on the green'], [all.length, 'Booked groups', 'Four golfers per group'], [(holes.length > 3 ? holes.length : holes.join(' & ')) || '—', 'Starting holes', allocationNote(all.length, assigned)], [named, 'Named golfers', `of ${all.length * 4} player places`]]);
   $('#count-all').textContent = all.length; $('#count-assigned').textContent = assigned; $('#count-pending').textContent = all.length - assigned;
   $('#results').textContent = `Showing ${visible.length} of ${all.length} groups`;
   // Cards are grouped under a heading per starting hole ("1st tee", "10th tee").
@@ -59,6 +59,9 @@ function render() {
     if (open) { const li = el('li'); li.append(el('span', `+${open}`, 'number'), el('span', `${open === 4 ? 'Players' : open === 1 ? 'Player' : 'Players'} to be confirmed`, 'pending')); list.append(li); }
     body.append(list); card.append(head, body); items.push(card); return items;
   }));
+  const copy = emptyDrawCopy(all.length);
+  $('#empty h3').textContent = copy.title; $('#empty p').textContent = copy.text;
+  $('#empty .empty-symbol').classList.toggle('is-hidden', !copy.canClear); $('#clear-search').classList.toggle('is-hidden', !copy.canClear);
   $('#empty').hidden = !!visible.length;
 }
 async function load(manual = false) {

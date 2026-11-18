@@ -38,4 +38,8 @@ export function toast(message, error = false) {
 export const money = value => value === null || value === undefined ? '—' : new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', maximumFractionDigits: 2 }).format(value);
 // Draw order: starting hole, then tee time; groups still awaiting a hole go last.
 export const byStart = (a, b) => a.tee && b.tee ? a.tee.localeCompare(b.tee, undefined, { numeric: true }) || (a.time || '').localeCompare(b.time || '') : a.tee ? -1 : b.tee ? 1 : 0;
+export const allocationNote = (total, assigned) => !total ? 'Allocated once groups are added' : total - assigned ? `${assigned} of ${total} groups allocated` : 'Every group has a starting hole';
+export const emptyDrawCopy = total => total
+  ? { title: 'No groups found', text: 'Try another name or starting hole.', canClear: true }
+  : { title: 'The draw is on its way', text: 'Groups and starting holes will appear here once the organisers add them.', canClear: false };
 export const time = () => new Intl.DateTimeFormat('en-ZA', { hour: '2-digit', minute: '2-digit' }).format(new Date());

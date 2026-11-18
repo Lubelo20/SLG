@@ -14,6 +14,6 @@ The guide is served by the draw site at `/info/`: after editing `dist/`, run `np
 
 From the client's flyer and WhatsApp notes (12 November 2026): date, venue, registration and tee-off times, RSVP (by 30 October 2026) on (031) 812 0555 or olivia@slgas.co.za. Refreshments: halfway house, drinks cart, and stations on holes 5, 15 and 18; one halfway voucher per guest, on their cart. The SLG logo comes from slgas.co.za (`dist/assets/slg-logo-card.png`). Countdown dates are in `dist/countdown.js`.
 
-Not yet supplied, so not on the page: format, entry fee, dress code, hole sponsors, competitions, prize-giving/lunch time, and a host message from SLG (the current one is placeholder wording).
+The page also covers attire and the items provided at registration, on-course competitions and the hole 10 sponsor. Not yet supplied, so not on the page: format, entry fee and prize-giving/lunch time. The host message from SLG is still placeholder wording.
 
 Brand colours: navy `#141a4a`, orange `#f37d23`.
