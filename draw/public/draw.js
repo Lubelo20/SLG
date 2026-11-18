@@ -1,4 +1,4 @@
-import { $, allocationNote, byStart, el, emptyDrawCopy, organisationCount, request, stats, toast } from './ui.js';
+import { $, allocationNote, byStart, el, emptyDrawCopy, groupLabel, organisationCount, request, splitPlayer, stats, toast } from './ui.js';
 import { logo } from './logos.js';
 let entries = [], filter = 'all', loading = false, source = 'preview';
 function groups() {
@@ -12,27 +12,16 @@ function setFilter(value) {
   });
   render();
 }
-const teeName = tee => !tee ? 'Awaiting a starting hole' : /^\d+$/.test(tee) ? `${tee}${['th', 'st', 'nd', 'rd'][tee % 100 > 10 && tee % 100 < 14 ? 0 : tee % 10] || 'th'} tee` : `Hole ${tee}`;
 function render() {
   const all = groups(), assigned = all.filter(g => g.tee).length;
-  const holes = [...new Set(all.filter(g => g.tee).map(g => g.tee))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   const named = all.reduce((n, g) => n + g.players.filter(Boolean).length, 0);
   const q = $('#search').value.trim().toLowerCase();
   const visible = all.filter(g => (filter === 'all' || (filter === 'assigned' ? !!g.tee : !g.tee)) && `${g.organisation} ${g.tee} ${g.time || ''} ${g.players.join(' ')}`.toLowerCase().includes(q))
     .sort((a, b) => byStart(a, b) || a.organisation.localeCompare(b.organisation));
-  stats('#stats', [[organisationCount(entries), 'Organisations', 'Joining us on the green'], [all.length, 'Booked groups', 'Four golfers per group'], [(holes.length > 3 ? holes.length : holes.join(' & ')) || '—', 'Starting holes', allocationNote(all.length, assigned)], [named, 'Named golfers', `of ${all.length * 4} player places`]]);
+  stats('#stats', [[organisationCount(entries), 'Organisations', 'Joining us on the green'], [all.length, 'Booked groups', 'Four golfers per group'], [assigned, 'Starting holes assigned', allocationNote(all.length, assigned)], [named, 'Named golfers', `${all.length * 4} available player slots`]]);
   $('#count-all').textContent = all.length; $('#count-assigned').textContent = assigned; $('#count-pending').textContent = all.length - assigned;
   $('#results').textContent = `Showing ${visible.length} of ${all.length} groups`;
-  // Cards are grouped under a heading per starting hole ("1st tee", "10th tee").
-  let heading;
-  $('#groups').replaceChildren(...visible.flatMap(g => {
-    const items = [];
-    if (g.tee !== heading) {
-      heading = g.tee;
-      const count = visible.filter(v => v.tee === g.tee).length;
-      const h = el('h3', teeName(g.tee), 'tee-heading'); h.append(el('span', `${count} ${count === 1 ? 'group' : 'groups'}`));
-      items.push(h);
-    }
+  $('#groups').replaceChildren(...visible.map(g => {
     const card = el('article', '', 'card'), head = el('div', '', 'card-head'), tee = el('div', '', 'tee');
     const when = el('div', '', 'tee-when');
     when.append(el('span', g.tee ? (g.time ? 'Tee off' : 'Starting hole') : 'Awaiting hole'));
@@ -51,13 +40,15 @@ function render() {
       badge.querySelector('img').addEventListener('error', () => org.classList.remove('logo-wide'));
     }
     org.append(badge, name);
-    if (g.total > 1) body.append(el('p', `Group ${g.index} of ${g.total}`, 'group-label'));
-    body.append(org);
-    // Named golfers keep their slot number; empty slots collapse into one line.
-    const list = el('ol', '', 'players'), open = g.players.filter(name => !name).length;
-    g.players.forEach((name, i) => { if (!name) return; const li = el('li'); li.append(el('span', String(i + 1).padStart(2, '0'), 'number'), el('span', name)); list.append(li); });
-    if (open) { const li = el('li'); li.append(el('span', `+${open}`, 'number'), el('span', `${open === 4 ? 'Players' : open === 1 ? 'Player' : 'Players'} to be confirmed`, 'pending')); list.append(li); }
-    body.append(list); card.append(head, body); items.push(card); return items;
+    body.append(el('p', groupLabel(g, all.length), 'group-label'), org);
+    const list = el('ol', '', 'players');
+    g.players.forEach((player, i) => {
+      const li = el('li'), { name: golfer, company } = splitPlayer(player), who = el('span', '', player ? 'player' : 'pending');
+      who.textContent = golfer || 'Player to be confirmed';
+      if (company) who.append(el('small', company));
+      li.append(el('span', String(i + 1).padStart(2, '0'), 'number'), who); list.append(li);
+    });
+    body.append(list); card.append(head, body); return card;
   }));
   const copy = emptyDrawCopy(all.length);
   $('#empty h3').textContent = copy.title; $('#empty p').textContent = copy.text;

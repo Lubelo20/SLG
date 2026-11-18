@@ -132,10 +132,9 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .players li{display:flex;gap:14px;align-items:baseline;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-2)}
 .players .number{font:400 13px/1 var(--serif);color:var(--accent-text);font-variant-numeric:lining-nums}
 .players .pending{font-style:italic;color:var(--muted)}
-.tee-heading{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:18px 0 0;padding-bottom:10px;border-bottom:1px solid var(--line);font:400 26px/1.2 var(--serif);color:var(--accent-text);font-variant-numeric:lining-nums}
+.players .player{min-width:0}
+.players .player small{display:block;margin-top:2px;font-size:11px;line-height:1.35;color:var(--muted)}
 .info-link{margin:18px 0 0;text-align:center}
-.tee-heading:first-child{margin-top:0}
-.tee-heading span{font:500 9px/1 var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
 .empty-state{padding:48px 24px;text-align:center;background:var(--card);border:1px solid var(--line-soft);border-radius:var(--radius);box-shadow:var(--shadow)}
 .empty-state h3{font-size:24px;margin-bottom:6px}
 .empty-symbol{display:block;width:40px;height:40px;margin:0 auto 10px;color:var(--accent)}
@@ -198,7 +197,6 @@ a[href^="tel:"]{white-space:nowrap}
   .org{min-height:0;margin:2px 0 12px;gap:12px}.org-logo{width:72px;height:50px}.card h3{font-size:21px}
   .group-label{margin-bottom:6px}
   .players li{padding:8px 0}
-  .tee-heading{font-size:23px;margin-top:12px}
   .stat{padding:14px 10px}.stat strong{font-size:28px;margin:8px 0 2px}.stat small{font-size:11px}
   #print{display:none}
   .hero-actions{margin-top:24px;gap:10px}
@@ -224,7 +222,6 @@ a[href^="tel:"]{white-space:nowrap}
   .draw-tools{position:sticky;top:8px;z-index:5;margin-top:20px;padding:8px;gap:8px;box-shadow:0 10px 28px rgba(14,18,58,.14)}
   .draw-tools .tabs button{padding:10px 2px}
   .draw-tools .search input{padding-top:11px;padding-bottom:11px}
-  .tee-heading{scroll-margin-top:130px}
   /* Phones: smaller summary tiles so the search sits nearer the top */
   .stat{padding:12px 8px}.stat strong{font-size:24px;margin:6px 0 2px}.stat small{font-size:10.5px;line-height:1.35}.stat-label{font-size:8.5px;letter-spacing:.18em}
 }

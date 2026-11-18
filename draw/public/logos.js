@@ -13,16 +13,22 @@ export function initials(name) {
   const words = key(name).split(' ').filter(w => w && w !== 'and');
   return (words.length > 1 ? words[0][0] + words[1][0] : (words[0] || '?').slice(0, 2)).toUpperCase();
 }
+// Four-balls mix several companies, so they carry the host's logo.
+export function logoFor(name) {
+  const k = key(name), entry = LOGOS[k];
+  if (entry) return { ...entry, src: `/assets/logos/${entry.file}` };
+  return /^four ball \d+$/.test(k) ? { src: '/assets/golfday/slg-logo-card.png' } : null;
+}
 export function logo(name, className) {
-  const { file, tone, mark, wide } = LOGOS[key(name)] || {};
+  const { src, tone, mark, wide } = logoFor(name) || {};
   const node = document.createElement('span');
-  node.className = `${className}${file ? ` has-logo${tone ? ` tone-${tone}` : ''}` : ''}`;
+  node.className = `${className}${src ? ` has-logo${tone ? ` tone-${tone}` : ''}` : ''}`;
   node.setAttribute('aria-hidden', 'true'); // the organisation name is always shown beside it
-  if (file) {
+  if (src) {
     if (mark) node.dataset.mark = '';
     if (wide) node.dataset.wide = '';
     const img = document.createElement('img');
-    img.src = `/assets/logos/${file}`; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+    img.src = src; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
     img.onerror = () => { node.className = className; node.replaceChildren(initials(name)); };
     node.append(img);
   } else {
