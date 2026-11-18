@@ -1,4 +1,4 @@
-import { $, allocationNote, byStart, el, emptyDrawCopy, request, stats, toast } from './ui.js';
+import { $, allocationNote, byStart, el, emptyDrawCopy, organisationCount, request, stats, toast } from './ui.js';
 import { logo } from './logos.js';
 let entries = [], filter = 'all', loading = false, source = 'preview';
 function groups() {
@@ -20,7 +20,7 @@ function render() {
   const q = $('#search').value.trim().toLowerCase();
   const visible = all.filter(g => (filter === 'all' || (filter === 'assigned' ? !!g.tee : !g.tee)) && `${g.organisation} ${g.tee} ${g.time || ''} ${g.players.join(' ')}`.toLowerCase().includes(q))
     .sort((a, b) => byStart(a, b) || a.organisation.localeCompare(b.organisation));
-  stats('#stats', [[entries.length, 'Organisations', 'Joining us on the green'], [all.length, 'Booked groups', 'Four golfers per group'], [(holes.length > 3 ? holes.length : holes.join(' & ')) || '—', 'Starting holes', allocationNote(all.length, assigned)], [named, 'Named golfers', `of ${all.length * 4} player places`]]);
+  stats('#stats', [[organisationCount(entries), 'Organisations', 'Joining us on the green'], [all.length, 'Booked groups', 'Four golfers per group'], [(holes.length > 3 ? holes.length : holes.join(' & ')) || '—', 'Starting holes', allocationNote(all.length, assigned)], [named, 'Named golfers', `of ${all.length * 4} player places`]]);
   $('#count-all').textContent = all.length; $('#count-assigned').textContent = assigned; $('#count-pending').textContent = all.length - assigned;
   $('#results').textContent = `Showing ${visible.length} of ${all.length} groups`;
   // Cards are grouped under a heading per starting hole ("1st tee", "10th tee").

@@ -43,3 +43,8 @@ export const emptyDrawCopy = total => total
   ? { title: 'No groups found', text: 'Try another name or starting hole.', canClear: true }
   : { title: 'The draw is on its way', text: 'Groups and starting holes will appear here once the organisers add them.', canClear: false };
 export const time = () => new Intl.DateTimeFormat('en-ZA', { hour: '2-digit', minute: '2-digit' }).format(new Date());
+// Mixed four-balls list each golfer as "Name · Company"; count those companies when present.
+export const organisationCount = entries => {
+  const companies = entries.flatMap(e => e.groups.flatMap(g => g.players)).map(p => p.split(' · ')[1]).filter(Boolean);
+  return companies.length ? new Set(companies).size : entries.length;
+};
