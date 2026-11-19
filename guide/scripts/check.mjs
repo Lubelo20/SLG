@@ -7,10 +7,10 @@ import vm from 'node:vm';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = resolve(root, 'dist');
 const css = readFileSync(resolve(dist, 'style.css'), 'utf8');
-const pages = ['index.html'];
+const pages = ['index.html', 'rules.html'];
 const idsOf = page => [...readFileSync(resolve(dist, page), 'utf8').matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
 // Vercel serves dist with cleanUrls, so "/rules" is rules.html and "/" is index.html.
-const pageFor = path => { const p = path.replace(/^\//, ''); return p === '' ? 'index.html' : existsSync(resolve(dist, p)) ? p : `${p}.html`; };
+const pageFor = path => { const p = path.replace(/^\.?\//, ''); return p === '' ? 'index.html' : existsSync(resolve(dist, p)) ? p : `${p}.html`; };
 for (const page of pages) {
   const html = readFileSync(resolve(dist, page), 'utf8');
   const ids = idsOf(page);

@@ -10,6 +10,11 @@
       "source": "/draw",
       "destination": "/",
       "permanent": false
+    },
+    {
+      "source": "/rules",
+      "destination": "/info/rules",
+      "permanent": false
     }
   ],
   "rewrites": [
@@ -20,6 +25,10 @@
     {
       "source": "/info",
       "destination": "/info/index.html"
+    },
+    {
+      "source": "/info/rules",
+      "destination": "/info/rules.html"
     }
   ],
   "headers": [
