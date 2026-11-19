@@ -257,3 +257,23 @@ a[href^="tel:"]{white-space:nowrap}
 .not-found h1{color:#fbf7f0;font-size:clamp(30px,4.4vw,46px);line-height:1.2;margin:16px 0 0}
 .not-found p.meta{margin-top:18px;color:#e6ebf2}
 .not-found .hero-actions{margin-top:30px}
+
+/* Rules & formats on the draw page */
+.rules-intro{max-width:640px;margin:0 0 22px;font-size:15px;line-height:1.75;color:var(--ink-2)}
+.rules-formats{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rules-card,.rules-pace{background:var(--card);border:1px solid var(--line-soft);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px 28px}
+.rules h3{font:400 24px/1.25 var(--serif);color:var(--ink);margin:10px 0 0}
+.rules-card h3 em{display:block;margin-top:2px;font-size:16px;color:var(--muted)}
+.rules-card dl{margin:18px 0 0;display:grid;gap:14px}
+.rules-card dt{font:500 9px/1.5 var(--sans);letter-spacing:.32em;text-transform:uppercase;color:var(--accent-text)}
+.rules-card dd{margin:4px 0 0;font-size:14px;line-height:1.7;color:var(--ink-2)}
+.rules-pace{margin-top:16px;background:var(--peach);border-color:rgba(243,125,35,.18)}
+.rules-pace p:last-child{margin:10px 0 0;font-size:14px;line-height:1.75;color:var(--ink-2)}
+.rules .rules-sub{margin-top:30px}
+.rules-note{margin:8px 0 0;font-size:14px;line-height:1.75;color:var(--ink-2)}
+.countback{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0 0;padding:0;list-style:none;counter-reset:cb}
+.countback li{counter-increment:cb;background:var(--card);border:1px solid var(--line-soft);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 16px;text-align:center}
+.countback li:before{content:counter(cb);display:block;margin-bottom:8px;font:600 10px/1 var(--sans);letter-spacing:.24em;color:var(--accent-text)}
+.countback b{display:block;font:400 24px/1.2 var(--serif);color:var(--ink)}
+.countback span{display:block;margin-top:6px;font-size:12.5px;line-height:1.5;color:var(--muted)}
+@media(max-width:720px){.rules-formats{grid-template-columns:1fr}.rules-card,.rules-pace{padding:22px 20px}.countback{grid-template-columns:1fr 1fr;gap:10px}}
