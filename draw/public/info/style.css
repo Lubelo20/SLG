@@ -306,9 +306,11 @@ body{background:transparent}
 .card.sponsor .who{margin:12px 0 0}
 
 /* The Day: four details (date, registration, tee-off, venue) */
-.tee-row{grid-template-columns:repeat(4,1fr)}
-@media(max-width:960px){.tee-row{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:720px){.tee-row{grid-template-columns:1fr}}
+.tee-row{grid-template-columns:repeat(6,1fr)}
+.tee-row .card{grid-column:span 2}
+.tee-row .card:nth-child(n+4){grid-column:span 3}
+@media(max-width:960px){.tee-row{grid-template-columns:repeat(2,1fr)}.tee-row .card,.tee-row .card:nth-child(n+4){grid-column:auto}.tee-row .card:last-child{grid-column:1/-1}}
+@media(max-width:720px){.tee-row{grid-template-columns:1fr}.tee-row .card:last-child{grid-column:auto}}
 #refreshments .feature{margin-top:16px}
 
 /* Phones: the two competition cards sit side by side */
