@@ -1,5 +1,17 @@
 {
   "outputDirectory": "public",
+  "redirects": [
+    {
+      "source": "/guide",
+      "destination": "/info/",
+      "permanent": false
+    },
+    {
+      "source": "/draw",
+      "destination": "/",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/admin",
@@ -33,7 +45,7 @@
       ]
     },
     {
-      "source": "/(.*)\\.(jpg|jpeg|png|svg|ico)",
+      "source": "/(.*)\\.(jpg|jpeg|png|svg|ico|woff2)",
       "headers": [
         {
           "key": "Cache-Control",

@@ -1,6 +1,13 @@
 import { $, allocationNote, byStart, el, emptyDrawCopy, groupLabel, organisationCount, request, splitPlayer, stats, toast } from './ui.js';
 import { logo } from './logos.js';
 let entries = [], filter = 'all', loading = false, source = 'preview';
+// Each visitor's browser keeps the last draw it loaded, so a database outage on the day still shows their group.
+const SAVED_DRAW = 'slg-draw-last';
+const remember = rows => { try { localStorage.setItem(SAVED_DRAW, JSON.stringify(rows)); } catch {} };
+const recall = () => {
+  try { const rows = JSON.parse(localStorage.getItem(SAVED_DRAW)); return Array.isArray(rows) && rows.length && rows.every(e => Array.isArray(e?.groups)) ? rows : null; }
+  catch { return null; }
+};
 function groups() {
   return entries.flatMap(e => e.groups.map((g, i) => ({ ...g, organisation: e.organisation, index: i + 1, total: e.bookings })));
 }
@@ -61,6 +68,7 @@ async function load(manual = false) {
   try {
     const { data, response } = await request('/api/draw');
     entries = data.map(({ id, organisation, bookings, groups }) => ({ id, organisation, bookings, groups }));
+    remember(entries);
     source = response.headers.get('X-Draw-Storage') || 'neon';
     $('#data-status').textContent = source === 'local' ? 'Local draw' : 'Live draw';
     $('#data-status').classList.add('live');
@@ -73,9 +81,9 @@ async function load(manual = false) {
       $('#data-status').textContent = 'Refresh needed';
     } else {
       try {
-        entries = (await request('/draw.json')).data; source = 'preview';
+        entries = recall() || (await request('/draw.json')).data; source = 'preview';
         $('#data-status').textContent = 'Saved draw';
-        $('#notice').hidden = false; $('#notice').textContent = 'You are viewing a saved copy of the draw, so the latest changes may be missing. Please confirm your tee time at registration.';
+        $('#notice').hidden = false; $('#notice').textContent = 'You are viewing a saved copy of the draw, so the latest changes may be missing. Please confirm your starting hole at registration.';
       } catch { entries = []; $('#notice').hidden = false; $('#notice').textContent = 'Unable to load the draw. Use Refresh draw to try again.'; $('#data-status').textContent = 'Unavailable'; }
     }
     $('#data-status').classList.remove('live');

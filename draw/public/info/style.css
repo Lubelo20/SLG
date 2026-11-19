@@ -329,3 +329,9 @@ body{background:transparent}
   .closing .top{display:inline-flex;align-items:center;min-height:44px;margin-top:28px;padding:0 12px;font-size:10.5px;letter-spacing:.24em}
   .closing .top+.top{margin-left:4px}
 }
+
+/* Quick links to the main guide sections */
+.jump{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 6px;max-width:640px;margin:18px auto 0}
+.jump a{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;font:500 9.5px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+.jump a:hover{color:var(--accent-text)}
+.chapter{scroll-margin-top:12px}

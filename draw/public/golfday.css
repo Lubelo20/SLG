@@ -250,3 +250,10 @@ a[href^="tel:"]{white-space:nowrap}
   .closing-links a{min-height:44px;padding:0 12px;font-size:10.5px;letter-spacing:.24em}
 }
 .is-hidden{display:none!important}
+
+/* Directions and guide buttons; branded page for addresses that do not exist */
+.info-link{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
+.not-found{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center}
+.not-found h1{color:#fbf7f0;font-size:clamp(30px,4.4vw,46px);line-height:1.2;margin:16px 0 0}
+.not-found p.meta{margin-top:18px;color:#e6ebf2}
+.not-found .hero-actions{margin-top:30px}
